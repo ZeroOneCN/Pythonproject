@@ -107,9 +107,8 @@ public class MainViewModel : ObservableObject
         {
             if (SetProperty(ref _selectedConnection, value))
             {
+                HasSelection = value != null;
                 UpdateDetailText();
-                ((RelayCommand)KillProcessCommand).RaiseCanExecuteChanged();
-                ((RelayCommand)CopyPidCommand).RaiseCanExecuteChanged();
                 ((RelayCommand)CopyCmdLineCommand).RaiseCanExecuteChanged();
             }
         }
@@ -119,7 +118,14 @@ public class MainViewModel : ObservableObject
     public bool HasSelection
     {
         get => _hasSelection;
-        set => SetProperty(ref _hasSelection, value);
+        set
+        {
+            if (SetProperty(ref _hasSelection, value))
+            {
+                ((RelayCommand)KillProcessCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)CopyPidCommand).RaiseCanExecuteChanged();
+            }
+        }
     }
 
     // ── Commands ───────────────────────────────────────────────────────
@@ -205,7 +211,6 @@ public class MainViewModel : ObservableObject
         Connections.Clear();
         DetailText = string.Empty;
         SelectedConnection = null;
-        HasSelection = false;
         StatusText = "已清空";
     }
 
@@ -303,6 +308,5 @@ public class MainViewModel : ObservableObject
     public void OnSelectionChanged(ConnectionInfo? selectedItem)
     {
         SelectedConnection = selectedItem;
-        HasSelection = selectedItem != null;
     }
 }
